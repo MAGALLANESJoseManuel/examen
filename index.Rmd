@@ -1,0 +1,47 @@
+---
+title: "R Notebook"
+output:
+  html_document:
+    df_print: paged
+---
+
+1. la data lista
+```{r}
+library(rio)
+link1="https://github.com/MAGALLANESJoseManuel/examen/raw/refs/heads/main/reporte1.xlsx"
+vivi=import(link1,skip=5,thousands=" ")
+
+vivi=vivi[,-1]
+
+vivi=vivi[complete.cases(vivi),]
+```
+
+2. totales
+```{r}
+vivi$totalStatus= apply(vivi[,tail(names(vivi),5)],1,sum)
+
+vivi$totalElec=vivi[,3]+vivi[,4]
+habis=grep("habi",names(vivi))
+
+vivi$totalHabi=apply(vivi[,habis],1,sum)
+```
+
+3. pcts
+```{r}
+vivi$vulneElec=vivi$`No tiene alumbrado eléctrico`/vivi$totalElec
+vivi$vulneHab=vivi$`1 habitación`/vivi$totalHabi
+vivi$vulneStatus=vivi$`Propia sin título de propiedad`/vivi$totalStatus
+```
+
+4. QC
+```{r}
+vulnes=grep("vulne",names(vivi))
+summary(vivi[,vulnes])
+```
+
+5. listo
+```{r}
+vivivulne=vivi[,c(1,2,vulnes)]
+head(vivivulne)
+```
+
